@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const multer  = require('multer');
 const { users } = require('../models/User');
 const upload = require('../middlewares/uploadMulter');
+const { generateToken, verifyToken, hashPassword, comparePassword } = require('../utils')
 
 //const users = UserEntity;
 
@@ -38,13 +39,18 @@ router.get('/', async(req,res)=>{
 
 router.post('/signin', async(req,res)=>{
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        //const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await hashPassword(req.body.password)
         const user = new users({
             userName: req.body.userName,
             password: hashedPassword
         });
+        const user_ = await users.findOne({userName: req.body.userName});
+        if (user_ == null) {
         const savedUser = await user.save();
         res.status(200).json(savedUser);
+        }
+        else res.status(400).send('User is already exist');
     } catch(err) {
         res.json({msg: err});
     }
@@ -58,11 +64,12 @@ router.post('/login', async(req,res)=>{
         return res.status(400).send('User is not found');
     }
     try {
-        if (await bcrypt.compare(req.body.password, user.password)){
+        //if (await bcrypt.compare(req.body.password, user.password)){
+        if (await comparePassword(req.body.password, user.password)){
             res.status(200).send(`Welcome ${user.userName}`)
         }
         else {
-            res.status(500).send("Failed to access")
+            res.status(500).send("Password wrong !! Please try again")
         }
     } catch(err) {
         res.json({msg: err});
