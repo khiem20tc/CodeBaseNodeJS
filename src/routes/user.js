@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const multer  = require('multer');
-const { users } = require('../models/User');
+const { UserEntity } = require('../models');
 const upload = require('../middlewares/uploadMulter');
 const { generateToken, verifyToken, hashPassword, comparePassword } = require('../utils')
 
-//const users = UserEntity;
+//const UserEntity = UserEntity;
 
 router.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -16,7 +16,7 @@ router.all('/', function(req, res, next) {
 
 router.put('/setAvatar/:id', upload.single('csv'), async(req,res) => {
     try {
-        const userUpdated = await users.updateOne(
+        const userUpdated = await UserEntity.updateOne(
             {_id: req.params.id}, 
             {$set: { 
                 avatar: req.file
@@ -30,7 +30,7 @@ router.put('/setAvatar/:id', upload.single('csv'), async(req,res) => {
 
 router.get('/', async(req,res)=>{
     try {
-        const user = await users.find();
+        const user = await UserEntity.find();
         res.status(200).json(user);
     } catch(err) {
         res.status(400).json({msg: err});
@@ -41,11 +41,11 @@ router.post('/signin', async(req,res)=>{
     try {
         //const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const hashedPassword = await hashPassword(req.body.password)
-        const user = new users({
+        const user = new UserEntity({
             userName: req.body.userName,
             password: hashedPassword
         });
-        const user_ = await users.findOne({userName: req.body.userName});
+        const user_ = await UserEntity.findOne({userName: req.body.userName});
         if (user_ == null) {
         const savedUser = await user.save();
         res.status(200).json(savedUser);
@@ -57,7 +57,7 @@ router.post('/signin', async(req,res)=>{
 })
 
 router.post('/login', async(req,res)=>{
-    const user = await users.findOne({userName: req.body.userName});
+    const user = await UserEntity.findOne({userName: req.body.userName});
     console.log(user);
     //if(Object.keys(user).length === 0) {
     if(user == null){
@@ -78,7 +78,7 @@ router.post('/login', async(req,res)=>{
 
 router.get('/:id', async(req,res)=>{
     try {
-        const user = await users.find({_id: req.params.id});
+        const user = await UserEntity.find({_id: req.params.id});
         res.status(200).json(user);
     } catch(err) {
         res.json({msg: err});
@@ -88,7 +88,7 @@ router.get('/:id', async(req,res)=>{
 
 router.delete('/:id', async(req,res)=>{
     try {
-        const userRemoved = await users.remove({_id: req.params.id});
+        const userRemoved = await UserEntity.remove({_id: req.params.id});
         res.status(200).json({msg: 'deleted'});
     } catch(err) {
         res.json({msg: err});
@@ -98,7 +98,7 @@ router.delete('/:id', async(req,res)=>{
 router.put('/:id', async(req,res)=>{
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const userUpdated = await users.updateOne(
+        const userUpdated = await UserEntity.updateOne(
             {_id: req.params.id}, 
             {$set: { 
                 userName: req.body.userName,
