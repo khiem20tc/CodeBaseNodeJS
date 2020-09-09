@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const multer  = require('multer');
+//const multer  = require('multer');
 const { UserEntity } = require('../models');
-const upload = require('../middlewares/uploadMulter');
+const { upload } = require('../middlewares');
 const { generateToken, verifyToken, hashPassword, comparePassword } = require('../utils')
 
 //const UserEntity = UserEntity;

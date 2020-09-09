@@ -3,7 +3,7 @@ const path = require('path')
 var storage_ = multer.diskStorage({
     destination: (req, file, cb) => {
 
-        cb(null, './uploads');
+        cb(null, './src/uploads');
 
     },
     filename: (req, file, cb) => {
@@ -35,4 +35,6 @@ function checkFileType(file, cb) {
     }
 }
 
-module.exports = upload;
+module.exports = {
+    upload
+}
