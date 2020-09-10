@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-//const multer  = require('multer');
 const { UserEntity } = require('../models');
 const { upload } = require('../middlewares');
 const { generateToken, verifyToken, hashPassword, comparePassword } = require('../utils')
-
-//const UserEntity = UserEntity;
 
 router.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -39,7 +36,6 @@ router.get('/', async(req,res)=>{
 
 router.post('/signin', async(req,res)=>{
     try {
-        //const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const hashedPassword = await hashPassword(req.body.password)
         const user = new UserEntity({
             userName: req.body.userName,
@@ -59,12 +55,10 @@ router.post('/signin', async(req,res)=>{
 router.post('/login', async(req,res)=>{
     const user = await UserEntity.findOne({userName: req.body.userName});
     console.log(user);
-    //if(Object.keys(user).length === 0) {
     if(user == null){
         return res.status(400).send('User is not found');
     }
     try {
-        //if (await bcrypt.compare(req.body.password, user.password)){
         if (await comparePassword(req.body.password, user.password)){
             res.status(200).send(`Welcome ${user.userName}`)
         }
