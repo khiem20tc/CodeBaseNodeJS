@@ -34,7 +34,7 @@ router.get('/', async(req,res)=>{
     }
 })
 
-router.post('/signin', async(req,res)=>{
+router.post('/signup', async(req,res)=>{
     try {
         const hashedPassword = await hashPassword(req.body.password)
         const user = new UserEntity({
